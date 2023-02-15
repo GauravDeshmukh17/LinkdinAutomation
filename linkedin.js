@@ -112,14 +112,7 @@ browserOpenPromise
             for(let i=0;i<allIds.length;i++){
                 idsArr.push(allIds[i].getAttribute('id'));
             }
-            let numString=idsArr[idsArr.length-1].split('r')[1];
-            let numInt=parseInt(numString);
-            console.log(numInt);
-            let add=numInt;
-            for(let i=0;i<20;i++){
-                add=add+5;
-                idsArr.push('ember'+add);
-            }
+    
             return idsArr;
         }
 
