@@ -55,33 +55,102 @@ browserOpenPromise
         let waitFor5Sec=cTab.waitForTimeout(5000);
         return waitFor5Sec;
     })
-    .then(function(){
-        console.log("click on Network Button");
-        function getConnectLinks(){
-            let linksArr=[];
-            let links=document.querySelectorAll('a[class="app-aware-link  discover-entity-type-card__link"]',{delay:50});
-            for(let i=0;i<links.length;i++){
-                linksArr.push(links[i].getAttribute('href'));
-            }
+    // .then(function(){
+    //     console.log("click on Network Button");
+    //     function getConnectLinks(){
+    //         let linksArr=[];
+    //         let links=document.querySelectorAll('a[class="app-aware-link  discover-entity-type-card__link"]',{delay:50});
+    //         for(let i=0;i<links.length;i++){
+    //             linksArr.push(links[i].getAttribute('href'));
+    //         }
             
-            return linksArr;
+    //         return linksArr;
+    //     }
+
+    //     let linksArrPromise=cTab.evaluate(getConnectLinks);
+    //     return linksArrPromise;
+    // })
+    // .then(function(linksArr){
+    //     console.log(linksArr);
+
+    // })
+
+    .then(function(){
+        console.log("Wait for 5sec done");
+        function getIds(){
+            let idsArr=[];
+            let allIds=document.querySelectorAll('button[class="msg-overlay-bubble-header__control msg-overlay-bubble-header__control--new-convo-btn artdeco-button artdeco-button--circle artdeco-button--muted artdeco-button--1 artdeco-button--tertiary ember-view"]',{delay:100});
+            for(let i=0;i<allIds.length;i++){
+                idsArr.push(allIds[i].getAttribute('id'));
+            }
+
+            return idsArr;
         }
 
-        let linksArrPromise=cTab.evaluate(getConnectLinks);
-        return linksArrPromise;
+        idsArrPromise=cTab.evaluate(getIds);
+        return idsArrPromise;
     })
-    .then(function(linksArr){
-        console.log(linksArr);
+    .then(function(idsArr){
+        console.log(idsArr);
+        let minimizePromise=WaitAndClick("#"+idsArr[1]);
+        return minimizePromise;
+    })
+    // .then(function(){
+    //     console.log("Minimized");
+    //     let clickSeeAllPromise=WaitAndClick('button[class="artdeco-button artdeco-button--muted artdeco-button--2 artdeco-button--tertiary ember-view"]');
+    //     return clickSeeAllPromise;
+    // })
+    .then(function(){
+        let wait20SecPromise=cTab.waitForTimeout(1000);
+        return wait20SecPromise;
+    })
+    .then(function(){
+        console.log("See All clicked");
+        function getIds(){
+            let idsArr=[];
+            let allIds=document.querySelectorAll('button[class="artdeco-button artdeco-button--2 artdeco-button--secondary ember-view full-width"]',{delay:100});
+            for(let i=0;i<allIds.length;i++){
+                idsArr.push(allIds[i].getAttribute('id'));
+            }
+            let numString=idsArr[idsArr.length-1].split('r')[1];
+            let numInt=parseInt(numString);
+            console.log(numInt);
+            let add=numInt;
+            for(let i=0;i<20;i++){
+                add=add+5;
+                idsArr.push('ember'+add);
+            }
+            return idsArr;
+        }
+
+        idsArrPromise=cTab.evaluate(getIds);
+        return idsArrPromise;
+    })
+    .then(function(idsArr){
+        console.log(idsArr);
+        let clickOnFollowPromise=WaitAndClick("#"+idsArr[0]);
+        for(let i=1;i<idsArr.length;i++){
+            clickOnFollowPromise=clickOnFollowPromise.then(function(){
+                let selector="#"+idsArr[i];
+                return WaitAndClick(selector);
+            })
+        }
+
+        return clickOnFollowPromise;
+    })
+    .then(function(){
+        console.log("Click done !");
     })
 
     // .then(function(){
     //     console.log("Wait for 5sec done");
-    //     let allLinksPromise=cTab.$$('button[class="artdeco-button artdeco-button--2 artdeco-button--full artdeco-button--secondary ember-view full-width"]',{delay:50});
-    //     return allLinksPromise;
+    //     let clickFollow=WaitAndClick('button[class="artdeco-button artdeco-button--2 artdeco-button--full artdeco-button--secondary ember-view full-width"]');
+    //     return clickFollow;
     // })
-    // .then(function(linksArr){
-    //     console.log("length : ",linksArr.length);
+    // .then(function(){
+    //     console.log("Follow button clicked");
     // })
+    
 
 
     function WaitAndClick(selector){
@@ -89,7 +158,7 @@ browserOpenPromise
             let waitForSelectorPromise=cTab.waitForSelector(selector);
             waitForSelectorPromise
                 .then(function(){
-                    let clickPromise=cTab.click(selector);
+                    let clickPromise=cTab.click(selector,{delay:2000});
                     return clickPromise;
                 })
                 .then(function(){
