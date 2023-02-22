@@ -1,7 +1,6 @@
 const puppeteer= require("puppeteer");
+const {email,password}=require("./secrets");
 
-let email="india17032001@gmail.com";
-let password="@17MARCH2001";
 let cTab;
 
 let browserOpenPromise=puppeteer.launch({
@@ -101,7 +100,16 @@ browserOpenPromise
     //     return clickSeeAllPromise;
     // })
     .then(function(){
-        let wait20SecPromise=cTab.waitForTimeout(1000);
+        let scrollToBotttomPromise=scrollToBottom();
+        for(let i=0;i<10;i++){
+            scrollToBotttomPromise=scrollToBotttomPromise.then(function(){
+                return scrollToBottom();
+            })
+        }
+        return scrollToBotttomPromise;
+    })
+    .then(function(){
+        let wait20SecPromise=cTab.waitForTimeout(2000);
         return wait20SecPromise;
     })
     .then(function(){
@@ -121,8 +129,15 @@ browserOpenPromise
     })
     .then(function(idsArr){
         console.log(idsArr);
-        let clickOnFollowPromise=WaitAndClick("#"+idsArr[0]);
-        for(let i=1;i<idsArr.length;i++){
+        // let clickOnFollowPromise=WaitAndClick("#"+idsArr[0]);
+        // for(let i=1;i<idsArr.length;i++){
+        //     clickOnFollowPromise=clickOnFollowPromise.then(function(){
+        //         let selector="#"+idsArr[i];
+        //         return WaitAndClick(selector);
+        //     })
+        // }
+        let clickOnFollowPromise=WaitAndClick("#"+idsArr[idsArr.length-1]);
+        for(let i=idsArr.length-2;i>0;i--){
             clickOnFollowPromise=clickOnFollowPromise.then(function(){
                 let selector="#"+idsArr[i];
                 return WaitAndClick(selector);
@@ -163,4 +178,26 @@ browserOpenPromise
             })
 
             return myPromise;
+        }
+
+
+        function scrollToBottom(){
+            return new Promise(function(resolve,reject){
+                function goToBottom(){
+                    window.scrollBy(0,window.innerHeight);
+                }
+                let goToBottomPromise=cTab.evaluate(goToBottom);
+                goToBottomPromise
+                    .then(function(){
+                        let wait2SecPromise=cTab.waitForTimeout(1000);
+                        return wait2SecPromise;
+                    })
+                    .then(function(){
+                        resolve();
+                    })
+                    .catch(function(err){
+                        reject(err);
+                    })
+            })
+
         }
